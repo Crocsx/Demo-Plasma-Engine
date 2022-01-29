@@ -1,0 +1,33 @@
+// Standalone Class to create and manage a cooldown
+class Cooldown
+{
+  var CurrentTime: Real = 0;
+  var CooldownTime: Real = 0;
+  var Callback: delegate ();
+      
+  // Delay before cooldown is completed, and callback method to call once done.
+  constructor(cooldownTime: Real, callback: delegate ()) {
+    this.Callback = callback;
+    this.CooldownTime = cooldownTime;
+    this.CurrentTime = cooldownTime;
+  }
+  
+  // Must be called in the implementors Update
+  function Updater(deltaTime : Real)
+  {
+    this.CurrentTime.X = this.CurrentTime.X - deltaTime;
+    if(this.CurrentTime.X < 0) {
+      this.Complete();
+    }
+  }
+
+  
+  function Reset() {
+    this.CurrentTime = this.CooldownTime;
+  }
+  
+  function Complete() {
+    this.Callback();
+    this = null;
+  }
+}

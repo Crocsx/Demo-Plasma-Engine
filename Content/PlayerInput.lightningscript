@@ -1,0 +1,74 @@
+// Component to allow WSAD movement on Object
+
+class PlayerInput : LightningComponent
+{
+  [Dependency]
+  var PlayerController: PlayerController;
+  
+  var Input: Real2 = Real2(0,0);
+
+ function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    Plasma.Connect(Plasma.Keyboard, Events.KeyDown, this.OnKeyDown);
+    Plasma.Connect(Plasma.Keyboard, Events.KeyUp, this.OnKeyUp);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.PlayerController.Update(
+      Real3(
+        this.Input.X,
+        0,
+        this.Input.Y
+      ),
+      event.Dt
+    );
+  }
+  
+  function OnKeyDown(event: KeyboardEvent) {
+    var fx = 0;
+    var fy = 0;
+    
+    if (event.Key == Keys.A) {
+      fx = -1;
+    } else if (event.Key == Keys.D) {
+      fx = 1;
+    }
+    
+    if (event.Key == Keys.W) {
+      fy = -1;
+    } else if (event.Key == Keys.S) {
+      fy = 1;
+    }
+    
+
+    this.Input = Real2(
+        fx,  
+        fy
+    );
+  }
+  
+  function OnKeyUp(event: KeyboardEvent) {
+    var fx = this.Input.X;
+    var fy = this.Input.Y;
+    
+    if (event.Key == Keys.A) {
+      fx = 0;
+    } else if (event.Key == Keys.D) {
+      fx = 0;
+    }
+    
+    if (event.Key == Keys.W) {
+      fy = 0;
+    } else if (event.Key == Keys.S) {
+      fy =0;
+    }
+    
+
+    this.Input = Real2(
+        fx,
+        fy
+    );
+  }
+}

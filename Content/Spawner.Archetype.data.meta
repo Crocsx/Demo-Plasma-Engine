@@ -1,0 +1,11 @@
+[Version:1]
+DataContent 
+{
+	DataBuilder 
+	{
+		var Name = "Spawner"
+		var ResourceId = 0x6184c853765e7d87
+		var LoaderType = "Cog"
+		var Version = 0
+	}
+}

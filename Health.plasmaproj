@@ -1,0 +1,38 @@
+[Version:1]
+Cog 
+{
+	var Name = ""
+	ProjectSettings 
+	{
+		var ProjectName = "Health"
+		var ProjectOwner = ""
+		var DefaultLevel = "Level"
+		var ProjectSpace = "Space"
+		var AutoTakeProjectScreenshot = true
+		var Guid = 0x6997876346912e13
+		var libraries = ""
+	}
+	WindowLaunchSettings 
+	{
+		var LaunchFullscreen = true
+		var WindowedResolution = Integer2{1280, 720}
+	}
+	FrameRateSettings 
+	{
+		var VerticalSync = false
+		var LimitFrameRate = true
+		var FrameRate = 60
+	}
+	LauncherProjectInfo 
+	{
+		var Tags = ""
+		var Application = "PlasmaEditor"
+		var Branch = "Master"
+		var MajorVersion = 0
+		var MinorVersion = 1
+		var PatchVersion = 8
+		var RevisionId = 0
+		var ShortChangeSet = "1d7d07b"
+		var PackageExtension = "PlasmaBuild"
+	}
+}

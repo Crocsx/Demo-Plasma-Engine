@@ -1,0 +1,77 @@
+// Component to make an item implements Health Abilities
+
+class Health : LightningComponent
+{
+
+  [Property] 
+  var MaxShield: Real = 100;
+  [Property] 
+  var ShieldRegenDelay: Real = 2;
+  [Property] 
+  var ShieldRegenSpeed: Real = 2;
+  
+  [Property] 
+  var MaxHealth: Real = 50;
+  [Property] 
+  var HealthRegenDelay: Real = -1;
+  [Property] 
+  var HealthRegenSpeed: Real = 2;
+  
+  [Property] 
+  var BleedTrough = true;
+  
+  var Shield: RegenerativeReal;
+  var Health: RegenerativeReal;
+  
+  function Initialize(init : CogInitializer)
+  {
+    this.Shield = new RegenerativeReal(this.ShieldRegenDelay, this.ShieldRegenSpeed, this.MaxShield, Real(0), this.OnShieldUpdate);
+    this.Health = new RegenerativeReal(this.HealthRegenDelay, this.HealthRegenSpeed, this.MaxHealth, Real(0), this.OnHealthUpdate);
+    Plasma.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.Shield.Updater(event);
+    this.Health.Updater(event);
+  }
+  
+  function ApplyDamage(damage: Real) {
+    this.ApplyDamage(damage, this.BleedTrough);
+  }
+
+  function ApplyDamage(damage: Real, bleedTrought: Boolean) {
+    if(bleedTrought) {
+      var overDamage = this.Shield.Damage(damage);
+      if(overDamage.X > 0) {
+        this.Health.Damage(overDamage.X);
+      }
+    } else {
+      if(this.Shield.CanWistandDamage(damage)) {
+        this.Shield.Damage(damage);
+      } else {
+        this.Health.Damage(damage);
+      }
+    }
+  }
+    
+  function Regenerate() {
+    this.Shield.StartRegeneration();
+    this.Health.StartRegeneration();
+  }
+  
+  function OnShieldUpdate(event: RegenerationEvent) {
+    Console.WriteLine("Shield State : `event.State` Remaining: `event.Value`");
+    if(event.State == RegenerationState.FULL) {
+      this.Health.StartRegeneration();
+    }
+    
+  }
+  
+  function OnHealthUpdate(event: RegenerationEvent) {
+    Console.WriteLine("Health State : `event.State` Remaining: `event.Value`");
+    if(event.State == RegenerationState.DEPLEATED) {
+      Console.WriteLine("Player is Dead");
+    }
+  }
+}

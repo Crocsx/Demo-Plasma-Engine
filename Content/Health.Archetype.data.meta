@@ -1,0 +1,11 @@
+[Version:1]
+DataContent 
+{
+	DataBuilder 
+	{
+		var Name = "Health"
+		var ResourceId = 0x6184349830931c5f
+		var LoaderType = "Cog"
+		var Version = 0
+	}
+}

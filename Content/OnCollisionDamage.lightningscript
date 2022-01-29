@@ -1,0 +1,21 @@
+// Component that apply damage when it collide with a Component implementing Health
+
+class OnCollisionDamage : LightningComponent
+{
+  [Property]
+  var Damage: Real=0;
+
+  function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+  }
+
+  function OnCollisionStarted(event : CollisionEvent)
+  {
+    var health = event.OtherObject.GetComponentByName("Health") as Health;
+    if(health != null) {
+      health.ApplyDamage(this.Damage);
+      this.Owner.Destroy();
+    }
+  }
+}

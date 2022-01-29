@@ -1,0 +1,135 @@
+// Standalone Class that implement a Real clamped between a min and max,
+// and that can "regenerate" meaning going back to max value after a defined delay of time.
+enum RegenerationState {
+  FULL,
+  DAMAGED,
+  REGENERATING,
+  DEPLEATED
+}
+
+class RegenerationEvent : LightningEvent
+{    
+    var State : RegenerationState;
+    var Value : Real = 0;
+}   
+
+class RegenerativeReal
+{
+  sends RegenerationEvent : RegenerationEvent;
+  
+  // PARAMETERS ---
+  // Minimum and Maximum amount possible for this Real
+  var Minimum: Real = 0;
+  var Maximum: Real = 100;
+  
+  // Time Before the regeneration will start
+  var RegenerationDelay: Real = 2;
+  // Time necessary to regerate from Minimum to Maximum
+  var RegenerationSpeed: Real = 1;
+  // -----
+  
+  var Remaining: Real = 100;
+  var RegenerateTimer: Real = 0;
+  var RegenerateFrom: Real = 0;
+  var State: RegenerationState = RegenerationState.FULL;
+
+  var CooldownRef: Cooldown;
+  var Notifier: delegate(event: RegenerationEvent);
+        
+        
+  // If Delay is negative, value will not regenerate automatically.
+  constructor(delay: Real, speed: Real, max: Real, min: Real, notifier: delegate (event: RegenerationEvent))
+  {
+    this.Remaining = max;
+    this.Minimum = min;
+    this.Maximum = max;
+    this.RegenerationDelay = delay;
+    this.RegenerationSpeed = speed;
+    this.Notifier = notifier;
+  }
+  
+  function Updater(event : UpdateEvent) {
+    if(this.State == RegenerationState.DAMAGED || this.State == RegenerationState.DEPLEATED) {
+      if(this.CooldownRef != null) {
+        this.CooldownRef.Updater(event.Dt);
+      }
+    }
+    if(this.State == RegenerationState.REGENERATING) {
+      this.Regenerate(event.Dt);
+    }
+  }
+  
+  function CanWistandDamage(damage: Real): Boolean {
+    return this.State != RegenerationState.DEPLEATED;
+  }
+  
+  function Damage(damage: Real): Real {
+    var damages = this.CalculateDamage(damage);
+    this.Remaining.X = damages[0];
+    this.CheckStatus();
+    return damages[1];
+  }
+  
+  function StartRegeneration() {
+    this.CooldownRef = null;
+    this.RegenerateFrom.X = this.Remaining.X;
+    if(this.Maximum.X == this.Remaining.X) {
+      return;
+    }
+    if(this.Remaining.X == 0) {
+      this.RegenerateTimer.X = 0;
+    } else {
+      this.RegenerateTimer.X = this.RegenerationSpeed.X * (this.Remaining.X /this.Maximum.X);
+    }
+    this.SetState(RegenerationState.REGENERATING);
+  }
+  
+  function Regenerate(delta: Real) {
+    this.RegenerateTimer.X += delta.X;
+    this.Remaining.X = MathUtils.Lerp(this.RegenerateFrom.X, this.Maximum.X, this.RegenerateTimer.X / this.RegenerationSpeed.X);
+    if(this.Remaining.X >= this.Maximum.X) {
+      this.Remaining.X = this.Maximum.X;
+      this.RegenerateFrom.X = Real(0);
+      this.SetState(RegenerationState.FULL);
+      this.CooldownRef = null;
+    }
+  }
+
+  function SetState(state: RegenerationState)
+  {
+    this.State = state;
+    var event = new RegenerationEvent();
+    event.State = this.State;
+    event.Value = this.Remaining;
+    this.Notifier(event);
+  }
+    
+    
+  // Return a real 2
+  // value[0] => remaining shield available
+  // value[1] => damage that the shield couldn't take
+  function CalculateDamage(damage: Real): Real2 {
+    var remaining: Real = 0;
+    var overDamage: Real = 0;
+    if((this.Remaining.X - damage.X) > this.Minimum) {
+      remaining = this.Remaining.X - damage.X;
+    } else {
+      overDamage = Math.Abs(this.Minimum.X + (this.Remaining.X - damage.X));
+      remaining = this.Minimum.X;
+    }
+    return Real2(remaining, overDamage);
+  }
+  
+  function CheckStatus() {
+    if(this.Remaining.X < this.Maximum.X) {
+      if(this.Remaining.X > this.Minimum.X) {
+        this.SetState(RegenerationState.DAMAGED);
+      } else {
+        this.SetState(RegenerationState.DEPLEATED);
+      }
+      if(this.RegenerationDelay.X > 0) {
+        this.CooldownRef = new Cooldown(this.RegenerationDelay.X, this.StartRegeneration);
+      }
+    }
+  }
+}

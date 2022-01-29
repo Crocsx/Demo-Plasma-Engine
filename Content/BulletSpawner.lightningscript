@@ -1,0 +1,35 @@
+// Component that Spawn A Object that must implement OnCollisionDamage and apply damage to it.
+
+class BulletSpawner : LightningComponent
+{
+  [Property]
+  var Bullet: Archetype;
+  [Property]
+  var SpawnTime: Real = 2;
+  
+  [Property]
+  var BulletDamage: Real = 10;
+  
+  
+  var CooldownRef: Cooldown;
+  function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    this.CooldownRef = new Cooldown(this.SpawnTime, this.Spawn);
+
+    var text = this.Owner.FindChildByName("SpriteText").GetComponentByName("SpriteText") as SpriteText;
+    text.Text = "Damage `this.BulletDamage`";
+  }
+  
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+     this.CooldownRef.Updater(event.Dt);
+  }
+  
+  function Spawn () {
+    var spawned = this.Space.CreateAtPosition(this.Bullet, this.Owner.Transform.Translation);
+    var attacker = spawned.GetComponentByName("OnCollisionDamage") as OnCollisionDamage;
+    attacker.Damage = this.BulletDamage;
+    this.CooldownRef = new Cooldown(this.SpawnTime, this.Spawn);
+  }
+}

@@ -1,0 +1,19 @@
+// Component to make an item a Health Regenerator
+
+class Heal : LightningComponent
+{
+
+  function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Owner, Events.CollisionStarted, this.OnCollisionStarted);
+  }
+
+  function OnCollisionStarted(event : CollisionEvent)
+  {
+    var health = event.OtherObject.GetComponentByName("Health") as Health;
+    if(health != null) {
+      health.Regenerate();
+      this.Owner.Destroy();
+    }
+  }
+}

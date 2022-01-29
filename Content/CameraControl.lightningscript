@@ -1,0 +1,41 @@
+// Component to Center the camera on a Target
+
+class CameraControl : LightningComponent
+{
+  [Property][LocalModificationOverride]
+  var OffsetZ = 10;
+  [Property][LocalModificationOverride]
+  var OffsetY = 5;
+  [Property][LocalModificationOverride]
+  var Target: CogPath;
+
+  [Dependency]
+  var Orientation : Orientation;
+
+  function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    this.UpdateCameraPosition();
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.UpdateCameraPosition();
+    this.UpdateCameraRotation();
+  }
+  
+  function UpdateCameraPosition() {
+    var position = Real3(
+      this.Target.Cog.Transform.Translation.X,
+      this.Target.Cog.Transform.Translation.Y + this.OffsetY,
+      this.Target.Cog.Transform.Translation.Z + this.OffsetZ
+    
+    );
+    
+    this.Owner.Transform.Translation = position;
+  }
+  
+  function UpdateCameraRotation() {
+    this.Orientation.LookAtPoint(this.Target.Cog.Transform.Translation);
+  }
+}

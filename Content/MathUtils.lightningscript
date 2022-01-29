@@ -1,0 +1,10 @@
+// Standalone Class with additional useful mathematical methods.
+
+class MathUtils 
+{
+  [Static]
+  function Lerp(a: Real, b: Real, t: Real): Real
+  {
+    return a.X + t.X * (b.X - a.X);
+  }
+}

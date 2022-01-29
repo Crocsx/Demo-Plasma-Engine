@@ -1,0 +1,22 @@
+// Component that Destroy The Owner after an amount of second
+class AutoDestroy : LightningComponent
+{
+  [Property]
+  var AutoDestroyTime: Real = 8;
+  
+  var CooldownRef: Cooldown;
+  function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+    this.CooldownRef = new Cooldown(this.AutoDestroyTime, this.Destroy);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.CooldownRef.Updater(event.Dt);
+  }
+  
+  function Destroy() {
+    this.Owner.Destroy();
+  }
+}

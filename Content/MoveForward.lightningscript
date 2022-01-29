@@ -1,0 +1,20 @@
+// Component that make an Object go forward.
+
+class MoveForward : LightningComponent
+{
+  [Property]
+  var Speed: Real = 0.3;
+  function Initialize(init : CogInitializer)
+  {
+    Plasma.Connect(this.Space, Events.LogicUpdate, this.OnLogicUpdate);
+  }
+
+  function OnLogicUpdate(event : UpdateEvent)
+  {
+    this.Owner.Transform.Translation = Real3(
+      this.Owner.Transform.Translation.X,
+      this.Owner.Transform.Translation.Y,
+      this.Owner.Transform.Translation.Z + this.Speed
+    );
+  }
+}

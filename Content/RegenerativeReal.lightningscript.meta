@@ -1,0 +1,17 @@
+[Version:1]
+TextContent 
+{
+	LightningScriptBuilder 
+	{
+		var Name = "RegenerativeReal"
+		var ResourceId = 0x6184e0e69b662b47
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"Utils"
+			"Core"
+		}
+	}
+}

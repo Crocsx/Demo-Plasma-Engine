@@ -1,0 +1,8 @@
+[Version:1]
+ContentLibrary 
+{
+	var Name = "Health"
+	var LibraryId = 0x6184e95382f3969e
+	var SourceControlType = ""
+	var ReadOnly = false
+}

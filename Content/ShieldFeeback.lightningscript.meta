@@ -1,0 +1,9 @@
+[Version:1]
+TextContent 
+{
+	LightningScriptBuilder 
+	{
+		var Name = "ShieldFeeback"
+		var ResourceId = 0x61843edad3f40604
+	}
+}

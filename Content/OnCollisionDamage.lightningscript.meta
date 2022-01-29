@@ -1,0 +1,18 @@
+[Version:1]
+TextContent 
+{
+	LightningScriptBuilder 
+	{
+		var Name = "OnCollisionDamage"
+		var ResourceId = 0x6184c6595b8d1ee2
+	}
+	ContentTags 
+	{
+		var Tags = Array
+		{
+			"LightningScript"
+			"Core"
+			"Gameplay"
+		}
+	}
+}

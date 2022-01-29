@@ -1,0 +1,9 @@
+[Version:1]
+TextContent 
+{
+	LightningScriptBuilder 
+	{
+		var Name = "AutoDestroy"
+		var ResourceId = 0x6184c664a82e4909
+	}
+}
